@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact Form & To-Do List with Images</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+    }
+
+    .card {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      flex: 1 1 400px;
+      max-width: 500px;
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+      font-weight: bold;
+    }
+
+    form input,
+    form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    form button {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .error-message {
+      color: red;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .todo-input {
+      margin-bottom: 16px;
+    }
+
+    .todo-input input[type="text"],
+    .todo-input input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .todo-input button {
+      width: 100%;
+      padding: 10px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    li {
+      background: #f1f1f1;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .task-img {
+      max-height: 60px;
+      max-width: 60px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-left: 10px;
+    }
+
+    .task-content {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      gap: 10px;
+    }
+
+    .delete-btn {
+      background: crimson;
+      border: none;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Responsive Contact Form & To-Do List with Images</h2>
+
+  <div class="container">
+
+    <!-- Contact Form -->
+    <div class="card">
+      <h3>Contact Us</h3>
+      <form id="contactForm" novalidate>
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required />
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required />
+
+        <label for="message">Message</label>
+        <textarea id="message" name="message" rows="5" required></textarea>
+
+        <div id="formErrors" class="error-message"></div>
+
+        <button type="submit">Send Message</button>
+      </form>
+    </div>
+
+    <!-- To-Do List -->
+    <div class="card">
+      <h3>To-Do List + Image</h3>
+      <div class="todo-input">
+        <input type="text" id="taskInput" placeholder="Add a new task..." />
+        <input type="file" id="imageInput" accept="image/*" />
+        <button onclick="addTask()">Add Task</button>
+      </div>
+      <ul id="taskList"></ul>
+    </div>
+
+  </div>
+
+  <script>
+    // Contact Form Validation
+    document.getElementById('contactForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const errorDiv = document.getElementById('formErrors');
+      let errors = [];
+
+      if (!name) errors.push('Name is required.');
+      if (!email) errors.push('Email is required.');
+      else if (!validateEmail(email)) errors.push('Invalid email address.');
+      if (!message) errors.push('Message is required.');
+
+      if (errors.length > 0) {
+        errorDiv.innerHTML = errors.join('<br>');
+      } else {
+        errorDiv.innerHTML = '';
+        alert('Form submitted successfully!');
+        this.reset();
+      }
+    });
+
+    function validateEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email.toLowerCase());
+    }
+
+    // To-Do List with Image Support
+    function addTask() {
+      const input = document.getElementById("taskInput");
+      const fileInput = document.getElementById("imageInput");
+      const taskText = input.value.trim();
+      const file = fileInput.files[0];
+
+      if (!taskText) {
+        alert("Please enter a task.");
+        return;
+      }
+
+      const li = document.createElement("li");
+      const contentDiv = document.createElement("div");
+      contentDiv.className = "task-content";
+      const textSpan = document.createElement("span");
+      textSpan.textContent = taskText;
+      contentDiv.appendChild(textSpan);
+
+      if (file && file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = document.createElement("img");
+          img.src = e.target.result;
+          img.className = "task-img";
+          contentDiv.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      }
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "Delete";
+      delBtn.className = "delete-btn";
+      delBtn.onclick = () => li.remove();
+
+      li.appendChild(contentDiv);
+      li.appendChild(delBtn);
+      document.getElementById("taskList").appendChild(li);
+
+      // Reset inputs
+      input.value = "";
+      fileInput.value = "";
+    }
+
+    // Press Enter to Add Task
+    document.getElementById("taskInput").addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addTask();
+      }
+    });
+  </script>
+
+</body>
+</html>
